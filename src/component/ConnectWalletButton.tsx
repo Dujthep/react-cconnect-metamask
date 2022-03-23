@@ -1,18 +1,10 @@
 import { useWeb3React } from "@web3-react/core";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { injected } from "./connectors";
 
+
 const ConnectWalletButton = () => {
-  const { activate, active } = useWeb3React()
-  const [isActive, setIsActive] = useState(false)
-
-  const handleIsActive = useCallback(() => {
-    setIsActive(active)
-  }, [active])
-
-  useEffect(() => {
-    handleIsActive()
-  }, [handleIsActive])
+  const { active, account, activate, deactivate } = useWeb3React()
 
   const connect = async () => {
     console.log('Connecting to MetaMask Wallet')
@@ -23,10 +15,20 @@ const ConnectWalletButton = () => {
     }
   }
 
+  const disconnect = async () => {
+    console.log('Deactivating...')
+    try {
+      await deactivate()
+    } catch (error) {
+      console.log('Error on disconnecting: ', error)
+    }
+  }
+
   return (
     <div>
-      <label>{isActive}</label>
       <button onClick={connect}>Connect Wallet</button>
+      {active ? <span>Connected with <b>{account}</b></span> : <span>Not connected</span>}
+      <button onClick={disconnect}>Disconnect</button>
     </div>
   );
 }
